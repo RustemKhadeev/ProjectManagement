@@ -1,0 +1,101 @@
+﻿@page "/catalog_employee"
+
+@inject CatalogEmployeeService CatalogEmployeeService
+@inject NavigationManager NavigationManager
+@inject MessageService MessageService
+
+@using ProjectManagement.Shared.Models.Models.Employees
+@using ProjectManagement.Client.Models.Services
+@using System.Text
+
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    <ProjectManagement.Client.Components.Bases.PageTitle Title="Каталог Сотрудники" Count="Catalog.Count" Loading="_isLoading">
+        <AntDesign.Button Size="@AntSizeLDSType.Small" OnClick="CreateAsync" Type="@ButtonType.Link" Icon="plus">Добавить</AntDesign.Button>
+    </ProjectManagement.Client.Components.Bases.PageTitle>
+
+    @foreach (var item in Catalog)
+    {
+        <div class="row">
+            <div class="col-1">
+                <ActionTemplate>
+                    <Space Size="@("1")">
+                        <SpaceItem>
+                            <NavLink href="@($"catalog_employee/{item.Id}")" class="px-2">
+                                <Icon Type="edit" Theme="outline"/>
+                            </NavLink>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <ProjectManagement.Client.Components.Bases.DeleteConfirm OnConfirm="async () => { await Delete(item); }" />
+                        </SpaceItem>
+                    </Space>
+                </ActionTemplate>
+            </div>
+            <div class="col-4">
+                <div class="text-label">ФИО</div>
+                <div>@item.FullName</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Электронный адрес</div>
+                <div>@item.Email</div>
+            </div>
+        </div>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    private bool _isLoading;
+
+    private List<CatalogEmployeeJournalItemDto> Catalog { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCatalogEmployeeAsync();
+    }
+
+    protected async Task GetCatalogEmployeeAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        Catalog = (await CatalogEmployeeService.GetCatalogEmployeeAsync()).Result;
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    protected async Task CreateAsync()
+    {
+        var response = await CatalogEmployeeService.CreateAsync();
+        if (response.Success)
+        {
+            var employeeDto = response.Result;
+            NavigationManager.NavigateTo($"catalog_employee/{employeeDto.Id}");
+        }
+        else
+        {
+            var str = new StringBuilder("");
+            foreach (var err in response.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        
+    }
+
+    private async Task Delete(CatalogEmployeeJournalItemDto item)
+    {
+        var res = await CatalogEmployeeService.DeleteAsync(item);
+
+        if (!res.Success)
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        else
+            await GetCatalogEmployeeAsync();
+    }
+}

@@ -1,0 +1,93 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = ProjectManagement.Client
+build_property.RootNamespace = ProjectManagement.Client
+build_property.ProjectDir = C:\Users\Nick\Documents\GitHub\ProjectManagement\ProjectManagement.Client\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Nick\Documents\GitHub\ProjectManagement\ProjectManagement.Client
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Bases/DeleteConfirm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xCYXNlc1xEZWxldGVDb25maXJtLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Bases/Loading.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xCYXNlc1xMb2FkaW5nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Bases/PageTitle.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xCYXNlc1xQYWdlVGl0bGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Bases/SaveButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xCYXNlc1xTYXZlQnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Editors/Employees.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFZGl0b3JzXEVtcGxveWVlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Employees/EmployeeItem.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFbXBsb3llZXNcRW1wbG95ZWVJdGVtLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Employees/EmployeeList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFbXBsb3llZXNcRW1wbG95ZWVMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Projects/ProjectItem.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQcm9qZWN0c1xQcm9qZWN0SXRlbS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Projects/ProjectList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQcm9qZWN0c1xQcm9qZWN0TGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Tasks/ProjectTaskItem.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xUYXNrc1xQcm9qZWN0VGFza0l0ZW0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Components/Tasks/ProjectTaskList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xUYXNrc1xQcm9qZWN0VGFza0xpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Pages/FetchData.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmV0Y2hEYXRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-9hkxccd305
+
+[C:/Users/Nick/Documents/GitHub/ProjectManagement/ProjectManagement.Client/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-xtfq4gg1e1

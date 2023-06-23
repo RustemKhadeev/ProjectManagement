@@ -1,0 +1,331 @@
+﻿@page "/catalog_project/{projectId:int}"
+
+@inject CatalogProjectService CatalogProjectService
+@inject CatalogEmployeeService CatalogEmployeeService
+@inject CatalogProjectTaskService CatalogProjectTaskService
+@inject CatalogProjectWorkerService CatalogProjectWorkerService
+@inject MessageService MessageService
+
+@using ProjectManagement.Shared.Models.Models.Projects
+@using ProjectManagement.Client.Models.Services
+@using ProjectManagement.Shared.Models.Models.Employees
+@using ProjectManagement.Shared.Models.Models.ProjectWorkers
+@using System.Text
+@using ProjectManagement.Shared.Models.Models.ProjectTasks
+
+<NavLink ActiveClass="is-active" href="@("catalog_project")">Назад</NavLink>
+
+<ProjectManagement.Client.Components.Bases.PageTitle Title="Проект" />
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    @if (Project != null)
+    {
+        <EditForm Model="@Project" OnValidSubmit="@SaveProject">
+            <div class="row">
+                <div class="col-md-4">
+                    Название проекта
+                    <AntDesign.Input @bind-Value="Project.Name"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Компании-заказчик
+                    <AntDesign.Input @bind-Value="Project.CustomerCompanyName"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Компании-исполнитель
+                    <AntDesign.Input @bind-Value="Project.ExecutorCompanyName"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Дата начала
+                    <AntDesign.DatePicker Picker="@DatePickerType.Date" Format="dd.MM.yyyy" @bind-Value="Project.StartDate" ShowToday="true" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Дата окончания
+                    <AntDesign.DatePicker Picker="@DatePickerType.Date" Format="dd.MM.yyyy" @bind-Value="Project.EndDate" ShowToday="true" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Задачи
+                    <AntDesign.Select
+                        DataSource="Tasks"
+                        @bind-Value="CurrentTaskValue"
+                        LabelName="@nameof(CatalogProjectTaskComboboxDto.Name)"
+                        ValueName="@nameof(CatalogProjectTaskComboboxDto.Id)"
+                        TItem="CatalogProjectTaskComboboxDto"
+                        TItemValue="int?"
+                        OnFocus="OnFocusTasks"
+                        EnableSearch>
+                    </AntDesign.Select>
+
+                    <div class="mb-2">
+                        <AntDesign.Button
+                            Loading="_isLoadingAddTask"
+                            OnClick="AddTaskAsync">
+                            Добавить
+                        </AntDesign.Button>
+                    </div>
+                </div>
+            </div>
+            @{
+                foreach (var worker in Project.ProjectTasks)
+                {
+                    <div class="row">
+                        <div class="col-1">
+                            <ActionTemplate>
+                                <Space Size="@("1")">
+                                    <SpaceItem>
+                                        <ProjectManagement.Client.Components.Bases.DeleteConfirm 
+                                            OnConfirm="async () => { await DeleteTaskAsync(worker); }" />
+                                    </SpaceItem>
+                                </Space>
+                            </ActionTemplate>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-label">Название</div>
+                            <div>@worker.Name</div>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="row">
+                <div class="col-md-4">
+                    Исполнители
+                    <AntDesign.Select
+                        DataSource="Employees"
+                        @bind-Value="CurrentEmployeeValue"
+                        LabelName="@nameof(CatalogEmployeeComboboxDto.Name)"
+                        ValueName="@nameof(CatalogEmployeeComboboxDto.Id)"
+                        TItem="CatalogEmployeeComboboxDto"
+                        TItemValue="int?"
+                        OnFocus="OnFocusEmployees"
+                        EnableSearch>
+                    </AntDesign.Select>
+
+                    <div class="mb-2">
+                        <AntDesign.Button
+                            Loading="_isLoadingAddEmployee"
+                            OnClick="AddWorkerAsync">
+                            Добавить
+                        </AntDesign.Button>
+                    </div>
+                </div>
+            </div>
+            @{
+                foreach (var worker in Project.ProjectWorkers)
+                {
+                    <div class="row">
+                        <div class="col-1">
+                            <ActionTemplate>
+                                <Space Size="@("1")">
+                                    <SpaceItem>
+                                        <ProjectManagement.Client.Components.Bases.DeleteConfirm 
+                                            OnConfirm="async () => { await DeleteWorkerAsync(worker); }" />
+                                    </SpaceItem>
+                                </Space>
+                            </ActionTemplate>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-label">ФИО</div>
+                            <div>@worker.EmployeeFullName</div>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="row">
+                <div class="col-md-4">
+                    Приоритет проекта
+                    <AntDesign.InputNumber Min="0" @bind-Value="Project.Priority" />
+                </div>
+            </div>
+            
+            <div class="sticky-bottom">
+                <ProjectManagement.Client.Components.Bases.SaveButton IsLoading="_isLoading"/>
+                <NavLink href="@("catalog_project")">
+                    <AntDesign.Button Type="@ButtonType.Link">Закрыть</AntDesign.Button>
+                </NavLink>
+            </div>
+        </EditForm>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    [Parameter]
+    public int ProjectId { get; set; }
+
+    private bool _isLoading;
+    private bool _isLoadingAddEmployee;
+    private bool _isLoadingAddTask;
+    private bool IsLoading;
+
+    private List<CatalogEmployeeComboboxDto> Employees { get; set; } = new();
+    private List<CatalogProjectTaskComboboxDto> Tasks { get; set; } = new();
+    
+    protected int? CurrentEmployeeValue { get; set; }
+    protected int? CurrentTaskValue { get; set; }
+    protected CatalogProjectDto Project { get; set; }
+    
+    protected async void OnFocusEmployees()
+    {
+        await GetEmployeesAsync();
+    }
+
+    protected async void OnFocusTasks()
+    {
+        await GetProjectTasksAsync();
+    }
+
+    private async Task AddWorkerAsync()
+    {
+        _isLoadingAddEmployee = true;
+        var entity = new CatalogProjectWorkerDto
+        {
+            CatalogProjectId = ProjectId,
+            CatalogEmployeeId = CurrentEmployeeValue ?? 0
+        };
+
+        var res = await CatalogProjectWorkerService.PutAsync(entity);
+        if (res.Success)
+            await GetProjectAsync();
+        else
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        
+        _isLoadingAddEmployee = false;
+    }
+
+    private async Task AddTaskAsync()
+    {
+        _isLoadingAddTask = true;
+        var entity = new CatalogProjectTaskDto
+            {
+                Id = CurrentTaskValue ?? 0,
+                CatalogProjectId = ProjectId
+            };
+
+        var res = await CatalogProjectTaskService.AddTaskInProject(entity);
+        if (res.Success)
+            await GetProjectAsync();
+        else
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+
+        _isLoadingAddTask = false;
+    }
+
+    private async Task DeleteTaskAsync(CatalogProjectTaskJournalItemDto item)
+    {
+        var res = await CatalogProjectTaskService.RemoveTaskFromProject(item);
+
+        if (!res.Success)
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        else
+            await GetProjectAsync();
+    }
+
+    private async Task DeleteWorkerAsync(CatalogProjectWorkerJournalItemDto item)
+    {
+        var res = await CatalogProjectWorkerService.DeleteAsync(item);
+
+        if (!res.Success)
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        else
+            await GetProjectAsync();
+    }
+
+    protected virtual async Task GetEmployeesAsync(string query = "")
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        var res = await CatalogEmployeeService.GetListAsync(query);
+        if (res.Success)
+            Employees = res.Result;
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    protected virtual async Task GetProjectTasksAsync(string query = "")
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        var res = await CatalogProjectTaskService.GetListAsync(query);
+        if (res.Success)
+            Tasks = res.Result;
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    protected virtual async Task GetProjectWorkersAsync()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        await GetProjectAsync();
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    protected async Task SaveProject()
+    {
+        _isLoading = true;
+
+        await CatalogProjectService.PutAsync(Project);
+        await GetProjectAsync();
+
+        _isLoading = false;
+    }
+
+    protected async Task GetProjectAsync()
+    {
+        Project = (await CatalogProjectService.GetAsync(ProjectId)).Result;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            await GetProjectAsync();
+
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

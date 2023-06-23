@@ -1,0 +1,167 @@
+﻿@page "/catalog_project_task/{taskId:int}"
+
+@inject CatalogProjectTaskService CatalogProjectTaskService
+@inject CatalogEmployeeService CatalogEmployeeService
+@inject CatalogProjectService CatalogProjectService
+@inject MessageService MessageService
+
+@using ProjectManagement.Shared.Models.Models.Projects
+@using ProjectManagement.Client.Models.Services
+@using ProjectManagement.Shared.Models.Models.Employees
+@using System.Text
+@using ProjectManagement.Shared.Models.Models.ProjectTasks
+@using System.Data
+@using ProjectManagement.Shared.Enums
+
+<NavLink ActiveClass="is-active" href="@("catalog_project_task")">Назад</NavLink>
+
+<ProjectManagement.Client.Components.Bases.PageTitle Title="Задача" />
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    @if (Task != null)
+    {
+        <EditForm Model="@Task" OnValidSubmit="@SaveTask">
+            <div class="row">
+                <div class="col-md-4">
+                    Название задачи
+                    <AntDesign.Input @bind-Value="Task.Name"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Описание задачи
+                    <AntDesign.TextArea Rows="3" @bind-Value="Task.Description"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Проект
+                    <AntDesign.Select DataSource="Projects"
+                                      @bind-Value="Task.CatalogProjectId"
+                                      LabelName="@nameof(CatalogProjectComboboxDto.Name)"
+                                      ValueName="@nameof(CatalogProjectComboboxDto.Id)"
+                                      TItem="CatalogProjectComboboxDto"
+                                      TItemValue="int?"OnFocus="OnFocus"
+                                      EnableSearch>
+                    </AntDesign.Select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Автор
+                    <AntDesign.Select DataSource="Employees"
+                                      @bind-Value="Task.AutorId"
+                                      LabelName="@nameof(CatalogEmployeeComboboxDto.Name)"
+                                      ValueName="@nameof(CatalogEmployeeComboboxDto.Id)"
+                                      TItem="CatalogEmployeeComboboxDto"
+                                      TItemValue="int?"OnFocus="OnFocus"
+                                      EnableSearch>
+                </AntDesign.Select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Исполнитель
+                    <AntDesign.Select DataSource="Employees"
+                                      @bind-Value="Task.ExecutorId"
+                                      LabelName="@nameof(CatalogEmployeeComboboxDto.Name)"
+                                      ValueName="@nameof(CatalogEmployeeComboboxDto.Id)"
+                                      TItem="CatalogEmployeeComboboxDto"
+                                      TItemValue="int?"OnFocus="OnFocus"
+                                      EnableSearch>
+                    </AntDesign.Select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Приоритет задачи
+                    <AntDesign.InputNumber Min="0" @bind-Value="Task.Priority" />
+                </div>
+            </div>
+
+            <div class="sticky-bottom">
+                <ProjectManagement.Client.Components.Bases.SaveButton IsLoading="_isLoading"/>
+                <NavLink href="@("catalog_project_task")">
+                    <AntDesign.Button Type="@ButtonType.Link">Закрыть</AntDesign.Button>
+                </NavLink>
+            </div>
+        </EditForm>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    [Parameter]
+    public int TaskId { get; set; }
+
+    private bool _isLoading;
+    private bool _isLoadingAdd;
+    private bool IsLoading;
+
+    private List<CatalogEmployeeComboboxDto> Employees { get; set; } = new();
+    private List<CatalogProjectComboboxDto> Projects { get; set; } = new();
+
+    protected CatalogProjectTaskDto Task { get; set; }
+    
+    protected async void OnFocus()
+    {
+        await GetEmployeesAsync();
+    }
+
+    protected virtual async Task GetEmployeesAsync(string query = "")
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        var res = await CatalogEmployeeService.GetListAsync(query);
+        if (res.Success)
+            Employees = res.Result;
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    protected virtual async Task GetProjectsAsync(string query = "")
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        var res = await CatalogProjectService.GetListAsync(query);
+        if (res.Success)
+            Projects = res.Result;
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    protected async Task SaveTask()
+    {
+        _isLoading = true;
+
+        await CatalogProjectTaskService.PutAsync(Task);
+        await GetProjectTasksAsync();
+
+        _isLoading = false;
+    }
+
+    protected async Task GetProjectTasksAsync()
+    {
+        Task = (await CatalogProjectTaskService.GetAsync(TaskId)).Result;
+        Employees = (await CatalogEmployeeService.GetListAsync()).Result;
+        Projects = (await CatalogProjectService.GetListAsync()).Result;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            await GetProjectTasksAsync();
+
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

@@ -1,0 +1,87 @@
+﻿@page "/catalog_employee/{employeeId:int}"
+
+@inject CatalogEmployeeService CatalogEmployeeService
+
+@using ProjectManagement.Shared.Models.Models.Employees
+@using ProjectManagement.Client.Models.Services
+
+<NavLink ActiveClass="is-active" href="@("catalog_employee")">Назад</NavLink>
+
+<ProjectManagement.Client.Components.Bases.PageTitle Title="Сотрудник" />
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    @if (Employee != null)
+    {
+        <EditForm Model="@Employee" OnValidSubmit="@SaveEmployee">
+            <div class="row">
+                <div class="col-md-4">
+                    Фамилия
+                    <AntDesign.Input @bind-Value="Employee.LastName"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Имя
+                    <AntDesign.Input @bind-Value="Employee.FirstName"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Отчество
+                    <AntDesign.Input @bind-Value="Employee.MiddleName"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    Электронный адрес
+                    <AntDesign.Input @bind-Value="Employee.Email"/></div>
+            </div>
+            
+            <div class="sticky-bottom">
+                <ProjectManagement.Client.Components.Bases.SaveButton IsLoading="_isLoading"/>
+                <NavLink href="@("catalog_employee")">
+                    <AntDesign.Button Type="@ButtonType.Link">Закрыть</AntDesign.Button>
+                </NavLink>
+            </div>
+        </EditForm>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    private bool _isLoading;
+
+    protected CatalogEmployeeDto Employee { get; set; }
+
+    [Parameter]
+    public int EmployeeId { get; set; }
+
+    protected async Task SaveEmployee()
+    {
+        _isLoading = true;
+
+        await CatalogEmployeeService.PutAsync(Employee);
+        await GetEmployee();
+
+        _isLoading = false;
+    }
+
+    protected async Task GetEmployee()
+    {
+        Employee = (await CatalogEmployeeService.GetAsync(EmployeeId)).Result;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            await GetEmployee();
+
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

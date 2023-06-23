@@ -1,0 +1,113 @@
+﻿@page "/catalog_project"
+
+@inject CatalogProjectService CatalogProjectService
+@inject NavigationManager NavigationManager
+@inject MessageService MessageService
+
+@using ProjectManagement.Client.Models.Services
+@using System.Text
+@using ProjectManagement.Shared.Models.Models.Projects
+
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    <ProjectManagement.Client.Components.Bases.PageTitle Title="Каталог Проекты" Count="Catalog.Count" Loading="_isLoading">
+        <AntDesign.Button Size="@AntSizeLDSType.Small" OnClick="CreateAsync" Type="@ButtonType.Link" Icon="plus">Добавить</AntDesign.Button>
+    </ProjectManagement.Client.Components.Bases.PageTitle>
+
+    @foreach (var item in Catalog)
+    {
+        <div class="row">
+            <div class="col-1">
+                <ActionTemplate>
+                    <Space Size="@("1")">
+                        <SpaceItem>
+                            <NavLink href="@($"catalog_project/{item.Id}")" class="px-2">
+                                <Icon Type="edit" Theme="outline"/>
+                            </NavLink>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <ProjectManagement.Client.Components.Bases.DeleteConfirm OnConfirm="async () => { await Delete(item); }" />
+                        </SpaceItem>
+                    </Space>
+                </ActionTemplate>
+            </div>
+            <div class="col-3">
+                <div class="text-label">Наименование</div>
+                <div>@item.Name</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Заказчик</div>
+                <div>@item.CustomerCompanyName</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Исполнитель</div>
+                <div>@item.ExecutorCompanyName</div>
+            </div>
+            <div class="col-1">
+                <div class="text-label">Дата начала</div>
+                <div>@item.StartDate</div>
+            </div>
+            <div class="col-1">
+                <div class="text-label">Дата окончания</div>
+                <div>@item.EndDate</div>
+            </div>
+        </div>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    private bool _isLoading;
+
+    private List<CatalogProjectJournalItemDto> Catalog { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetListAsync();
+    }
+
+    protected async Task GetListAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        Catalog = (await CatalogProjectService.GetCatalogProjectAsync()).Result;
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    protected async Task CreateAsync()
+    {
+        var response = await CatalogProjectService.CreateAsync();
+        if (response.Success)
+        {
+            var projectDto = response.Result;
+            NavigationManager.NavigateTo($"catalog_project/{projectDto.Id}");
+        }
+        else
+        {
+            var str = new StringBuilder("");
+            foreach (var err in response.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        
+    }
+
+    private async Task Delete(CatalogProjectJournalItemDto item)
+    {
+        var res = await CatalogProjectService.DeleteAsync(item);
+
+        if (!res.Success)
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        else
+            await GetListAsync();
+    }
+}

@@ -1,0 +1,22 @@
+﻿<Popconfirm OnConfirm="OnConfirmAsync" OkText="Да" CancelText="Нет" Placement="@Placement.BottomLeft">
+    <TitleTemplate>Вы действительно хотите удалить запись?</TitleTemplate>
+    <Unbound>
+        <AntDesign.Button RefBack="@context" OnClickStopPropagation="true" Danger Type="@ButtonType.Link" Size="small" Block="@Block">
+            <Icon Type="delete" Theme="outline"/>
+        </AntDesign.Button>
+    </Unbound>
+</Popconfirm>
+
+@code {
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public bool Block { get; set; } = false;
+
+    private async Task OnConfirmAsync(MouseEventArgs args)
+    {
+        if (OnConfirm.HasDelegate)
+            await OnConfirm.InvokeAsync();
+    }
+}

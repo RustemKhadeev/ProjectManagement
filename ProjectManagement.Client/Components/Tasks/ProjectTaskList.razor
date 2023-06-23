@@ -1,0 +1,117 @@
+﻿@page "/catalog_project_task"
+
+@inject CatalogProjectTaskService CatalogProjectTaskService
+@inject NavigationManager NavigationManager
+@inject MessageService MessageService
+
+@using ProjectManagement.Client.Models.Services
+@using System.Text
+@using ProjectManagement.Shared.Models.Models.ProjectTasks
+
+<ProjectManagement.Client.Components.Bases.Loading Spinning="_isLoading">
+    <ProjectManagement.Client.Components.Bases.PageTitle Title="Каталог Задачи" Count="Catalog.Count" Loading="_isLoading">
+        <AntDesign.Button Size="@AntSizeLDSType.Small" OnClick="CreateAsync" Type="@ButtonType.Link" Icon="plus">Добавить</AntDesign.Button>
+    </ProjectManagement.Client.Components.Bases.PageTitle>
+
+    @foreach (var item in Catalog)
+    {
+        <div class="row">
+            <div class="col-1">
+                <ActionTemplate>
+                    <Space Size="@("1")">
+                        <SpaceItem>
+                            <NavLink href="@($"catalog_project_task/{item.Id}")" class="px-2">
+                                <Icon Type="edit" Theme="outline"/>
+                            </NavLink>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <ProjectManagement.Client.Components.Bases.DeleteConfirm OnConfirm="async () => { await Delete(item); }" />
+                        </SpaceItem>
+                    </Space>
+                </ActionTemplate>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Проект</div>
+                <div>@item.ProjectInfo</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Наименование</div>
+                <div>@item.Name</div>
+            </div>
+            <div class="col-1">
+                <div class="text-label">Статус</div>
+                <div>@item.Status</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Описание</div>
+                <div>@item.Description</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Автор</div>
+                <div>@item.AutorName</div>
+            </div>
+            <div class="col-2">
+                <div class="text-label">Исполнитель</div>
+                <div>@item.ExecutorName</div>
+            </div>
+        </div>
+    }
+</ProjectManagement.Client.Components.Bases.Loading>
+
+
+@code {
+    private bool _isLoading;
+
+    private List<CatalogProjectTaskJournalItemDto> Catalog { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetListAsync();
+    }
+
+    protected async Task GetListAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        Catalog = (await CatalogProjectTaskService.GetCatalogProjectTaskAsync()).Result;
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    protected async Task CreateAsync()
+    {
+        var response = await CatalogProjectTaskService.CreateAsync();
+        if (response.Success)
+        {
+            var projectTaskDto = response.Result;
+            NavigationManager.NavigateTo($"catalog_project_task/{projectTaskDto.Id}");
+        }
+        else
+        {
+            var str = new StringBuilder("");
+            foreach (var err in response.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        
+    }
+
+    private async Task Delete(CatalogProjectTaskJournalItemDto item)
+    {
+        var res = await CatalogProjectTaskService.DeleteAsync(item);
+
+        if (!res.Success)
+        {
+            var str = new StringBuilder("");
+            foreach (var err in res.Error)
+                str.Append(err);
+
+            await MessageService.Error(str.ToString());
+        }
+        else
+            await GetListAsync();
+    }
+}

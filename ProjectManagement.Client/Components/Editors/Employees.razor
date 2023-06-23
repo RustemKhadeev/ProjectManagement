@@ -1,0 +1,27 @@
+﻿@using ProjectManagement.Shared.Models.Models.Employees
+@inherits BaseMultipleSelect<TValue, ProjectManagement.Shared.Models.Models.Employees.CatalogEmployeeComboboxDto, ProjectManagement.Client.Models.Services.CatalogEmployeeService>
+@typeparam TValue
+
+<AntDesign.Select Mode="multiple"
+                  DataSource="List"
+                  @bind-Values="CurrentValue"
+                  LabelName="@nameof(CatalogEmployeeComboboxDto.Name)"
+                  ValueName="@nameof(CatalogEmployeeComboboxDto.Id)"
+                  TItem="CatalogEmployeeComboboxDto"
+                  TItemValue="int?"
+                  Placeholder="@Placeholder"
+                  ShowArrowIcon="true"
+                  OnSearch="OnSearch"
+                  OnBlur="OnBlur"
+                  OnFocus="OnFocus"
+                  Loading="IsLoading"
+                  DefaultActiveFirstOption="false"
+                  EnableSearch
+                  AllowClear="true" OnSelectedItemsChanged="OnSelectedItemsChanged">
+
+</AntDesign.Select>
+
+
+@code {
+
+}
